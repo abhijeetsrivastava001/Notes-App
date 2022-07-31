@@ -92,13 +92,58 @@ function detailNote(index){
     noteElem.innerHTML = `<div class="noteCard my-2 mx-2 card" style="width: 80vw">
     <div class="card-body">
         <h5 class="card-title">${notesObj[index].title}</h5>
-        <p class="card-text">${notesObj[index].text}...</p>    
+        <p class="card-text">${notesObj[index].text}</p>    
         <button onclick = "showNotes()" class="btn btn-secondary">Dismis</button>
+        <button id=${index} onclick = "changeNotes(this.id)" class="btn btn-primary">Change note</button>
     </div>
     </div>`;
 
 }
 
+function changeNotes(index){
+    let notes = localStorage.getItem('notes');
+    if (notes == null) {
+        notesObj = [];
+    }
+    else {
+        notesObj = JSON.parse(notes);
+    }
+    console.log(notesObj[index].text);
+    let noteElem = document.getElementById('notes');
+    noteElem.innerHTML = `<div class="noteCard my-2 mx-2 card" style="width: 80vw">
+    <div class="card-body">
+        <div class="form-group">
+            <textarea class="form-control" id="addUpTitle" rows="1">${notesObj[index].title}</textarea>
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" id="addUpTxt" rows="3">${notesObj[index].text}</textarea>
+        </div>
+        <button onclick = "showNotes()" class="btn btn-secondary">Dismis</button>
+        <button id=${index} onclick = "updateNotes(this.id)" class="btn btn-primary">Update note</button>
+    </div>
+    </div>`;
+
+}
+
+function updateNotes(index){
+    let addUpTitle = document.getElementById('addUpTitle');
+    let addUpTxt = document.getElementById('addUpTxt');
+    console.log(addUpTitle.value)
+    console.log(addUpTxt.value)
+
+    myObj = {
+        title: addUpTitle.value,
+        text: addUpTxt.value
+    }
+
+    //Pushing the new note in the array
+    notesObj[index].title = myObj.title;
+    notesObj[index].text = myObj.text;
+
+    //Storing the array in localStorage
+    localStorage.setItem('notes', JSON.stringify(notesObj));
+    showNotes();
+}
 function deleteNote(index) {
     let notes = localStorage.getItem('notes');
     
@@ -121,9 +166,8 @@ search.addEventListener('input', function () {
     let inputVal = search.value.toLowerCase();
     let noteCard = document.getElementsByClassName('noteCard');
     Array.from(noteCard).forEach(function (element) {
-        let cardTxt = element.getElementsByTagName('p')[0].innerText;
         let titleTxt = element.getElementsByTagName('h5')[0].innerText;
-        if (cardTxt.includes(inputVal) || titleTxt.includes(inputVal)) {
+        if (titleTxt.includes(inputVal)) {
             element.style.display = 'block';
         }
         else {
